@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Erik Slote</title>
+  <!-- Google Font for Name -->
+  <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link 
+    href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" 
+    rel="stylesheet"
+
+    
+  />
+  <style>
+    /************************************************
+     * 1) Global Reset & Layout
+     ************************************************/
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background: #000;  /* Black background */
+      color: #ffffff;       /* White text */
+      font-family: Arial, sans-serif;
+      overflow: hidden;  /* Hide scrollbars */
+    }
+
+    /************************************************
+     * 2) Fullscreen Canvas for Lava Lamp
+     ************************************************/
+    #lava-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    /************************************************
+     * 3) Main Content Overlay
+     ************************************************/
+    .container {
+      position: relative;
+      z-index: 100;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    .name {
+      font-size: 4rem;
+      font-family: 'Great Vibes', cursive;
+      margin-bottom: 20px;
+    }
+    .blog-content {
+      width: 60%;
+      max-width: 800px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    /************************************************
+     * 4) Social Icons at Bottom Center
+     ************************************************/
+    .social-icons {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px;
+      z-index: 2; /* Added z-index so they appear above other elements */;
+    }
+    .icon-wrap {
+      display: inline-block;
+      border: 2px solid #00000000; /* White outline */
+      border-radius: 50%;
+      padding: 8px;
+      transition: transform 0.3s ease;
+      z-index: 2; /* Ensures each icon is on top of the background */
+    }
+    .icon-wrap:hover {
+      transform: translateY(-5px) scale(1.1); /* “Pop up” on hover */
+    }
+    .icon-wrap img {
+      width: 35px;  /* Adjust icon size */
+      height: 35px;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Canvas for the Lava Lamp Background -->
+  <canvas id="lava-canvas"></canvas>
+
+  <!-- Main Content Overlay -->
+  <div class="container">
+    <div class="name">Erik Slote</div>
+    
+    <!-- Bottom-Centered Social Icons -->
+    <div class="social-icons">
+        <a href="https://x.com/yourhandle" target="_blank" class="icon-wrap">
+        <img src="/images/—Pngtree—white twitter icon png_3562062.png" alt=""/>
+        </a>
+        <a href="https://www.instagram.com/erikslote/" target="_blank" class="icon-wrap">
+          <img src="/images/—Pngtree—white instagram icon png instagram_3562066.png" alt=""/>
+        </a>
+        <a href="https://www.linkedin.com/in/erikslote/" target="_blank" class="icon-wrap">
+          <img src="/images/—Pngtree—white linkedin icon png_3562068.png" alt=""/>
+        </a>
+      </div>
+  </div>
+
+  <script>
+    /************************************************
+     * 5) Lava Lamp Config (No On-Page Control Panel)
+     ************************************************/
+    const config = {
+      blobCount: 75,        // Number of blobs
+      minBlobSize: 14,       // Minimum blob radius
+      maxBlobSize: 20,       // Maximum blob radius
+      blobSpeed: 3.5,        // Movement speed
+      blobStickiness: 0.6,   // Bounce damping (0 < val <= 1 => bouncier)
+      color1: '#1B02A3',     // First color (B)
+      color2: '#8A00C4',     // Second color (P)
+      backgroundColor: '#000000', // Clear color (black)
+      threshold: 0.3         // Lower => bigger “lava” effect
+    };
+
+    /************************************************
+     * 6) Basic WebGL Setup
+     ************************************************/
+    const canvas = document.getElementById('lava-canvas');
+    const gl = canvas.getContext('webgl');
+    if (!gl) {
+      console.error('WebGL not supported.');
+    }
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function hexToRGB(hex) {
+      let h = hex.replace('#','');
+      if (h.length === 3) {
+        h = h.split('').map(ch => ch + ch).join('');
+      }
+      const num = parseInt(h, 16);
+      return [
+        ((num >> 16) & 255) / 255,
+        ((num >>  8) & 255) / 255,
+        ( num        & 255) / 255
+      ];
+    }
+    const rgb1 = hexToRGB(config.color1);
+    const rgb2 = hexToRGB(config.color2);
+    const bgColor = hexToRGB(config.backgroundColor);
+
+    /************************************************
+     * 7) Blob Class & Generation
+     ************************************************/
+    class Blob {
+      constructor(x, y, vx, vy, r, color) {
+        this.x = x; this.y = y;
+        this.vx = vx; this.vy = vy;
+        this.r = r;
+        this.color = color; // [r,g,b]
+      }
+    }
+    function createBlob() {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      let vx, vy;
+      do {
+        vx = (Math.random() - 0.5) * config.blobSpeed;
+        vy = (Math.random() - 0.5) * config.blobSpeed;
+      } while (Math.abs(vx) < 0.05 && Math.abs(vy) < 0.05);
+
+      const radius = Math.random() * (config.maxBlobSize - config.minBlobSize) + config.minBlobSize;
+      // Weighted average of color1 & color2
+      const w = Math.random();
+      const blend = [
+        w * rgb1[0] + (1 - w) * rgb2[0],
+        w * rgb1[1] + (1 - w) * rgb2[1],
+        w * rgb1[2] + (1 - w) * rgb2[2]
+      ];
+      return new Blob(x, y, vx, vy, radius, blend);
+    }
+    let blobs = [];
+    for (let i = 0; i < config.blobCount; i++) {
+      blobs.push(createBlob());
+    }
+
+    /************************************************
+     * 8) Movement & Bouncing
+     ************************************************/
+    function updateBlob(b) {
+      b.x += b.vx;
+      b.y += b.vy;
+      // Bounce horizontally
+      if (b.x < b.r) {
+        b.x = b.r;
+        b.vx = -b.vx * config.blobStickiness;
+      } else if (b.x > canvas.width - b.r) {
+        b.x = canvas.width - b.r;
+        b.vx = -b.vx * config.blobStickiness;
+      }
+      // Bounce vertically
+      if (b.y < b.r) {
+        b.y = b.r;
+        b.vy = -b.vy * config.blobStickiness;
+      } else if (b.y > canvas.height - b.r) {
+        b.y = canvas.height - b.r;
+        b.vy = -b.vy * config.blobStickiness;
+      }
+    }
+
+    /************************************************
+     * 9) Shader Program
+     ************************************************/
+    function compileShader(src, type) {
+      const s = gl.createShader(type);
+      gl.shaderSource(s, src);
+      gl.compileShader(s);
+      if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+        console.error('Shader compile error:', gl.getShaderInfoLog(s));
+        gl.deleteShader(s);
+        return null;
+      }
+      return s;
+    }
+    function createProgram(vSrc, fSrc) {
+      const vs = compileShader(vSrc, gl.VERTEX_SHADER);
+      const fs = compileShader(fSrc, gl.FRAGMENT_SHADER);
+      const prog = gl.createProgram();
+      gl.attachShader(prog, vs);
+      gl.attachShader(prog, fs);
+      gl.linkProgram(prog);
+      if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) {
+        console.error('Program link error:', gl.getProgramInfoLog(prog));
+        return null;
+      }
+      return prog;
+    }
+
+    const vShader = `
+      attribute vec2 a_position;
+      void main() {
+        gl_Position = vec4(a_position, 0.0, 1.0);
+      }
+    `;
+    const fShader = `
+      precision highp float;
+      const float threshold = ${config.threshold};
+      uniform vec3 u_blobs[${config.blobCount}];
+      uniform vec3 u_blobColors[${config.blobCount}];
+      uniform vec3 u_bgColor;
+
+      void main() {
+        float x = gl_FragCoord.x;
+        float y = gl_FragCoord.y;
+        float totalInfl = 0.0;
+        vec3 colorSum = vec3(0.0);
+        for (int i = 0; i < ${config.blobCount}; i++) {
+          vec3 blob = u_blobs[i]; // x,y,r
+          float dx = blob.x - x;
+          float dy = blob.y - y;
+          float infl = (blob.z * blob.z) / (dx*dx + dy*dy);
+          totalInfl += infl;
+          colorSum += infl * u_blobColors[i];
+        }
+        if (totalInfl > threshold) {
+          gl_FragColor = vec4(colorSum / totalInfl, 1.0);
+        } else {
+          gl_FragColor = vec4(u_bgColor, 1.0);
+        }
+      }
+    `;
+    const program = createProgram(vShader, fShader);
+    gl.useProgram(program);
+
+    // Full-screen quad
+    const posData = new Float32Array([
+      -1,  1,
+      -1, -1,
+       1,  1,
+       1, -1
+    ]);
+    const posBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, posBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, posData, gl.STATIC_DRAW);
+
+    const aPosLoc = gl.getAttribLocation(program, 'a_position');
+    gl.enableVertexAttribArray(aPosLoc);
+    gl.vertexAttribPointer(aPosLoc, 2, gl.FLOAT, false, 0, 0);
+
+    const uBlobsLoc = gl.getUniformLocation(program, 'u_blobs');
+    const uBlobColorsLoc = gl.getUniformLocation(program, 'u_blobColors');
+    const uBgColorLoc = gl.getUniformLocation(program, 'u_bgColor');
+
+    /************************************************
+     * 10) Animation Loop
+     ************************************************/
+    function animate() {
+      // Update each blob
+      blobs.forEach(updateBlob);
+
+      // Prepare uniform data
+      const blobArray = [];
+      const colorArray = [];
+      for (let b of blobs) {
+        blobArray.push(b.x, b.y, b.r);
+        colorArray.push(b.color[0], b.color[1], b.color[2]);
+      }
+      gl.uniform3fv(uBlobsLoc, new Float32Array(blobArray));
+      gl.uniform3fv(uBlobColorsLoc, new Float32Array(colorArray));
+      gl.uniform3fv(uBgColorLoc, new Float32Array(bgColor));
+
+      // Draw
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+</body>
+</html>
