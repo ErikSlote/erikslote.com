@@ -1,22 +1,27 @@
-// script.js - New version with delta-time integration
-
 /************************************************
  * 1) Read initial values from the control panel inputs
  ************************************************/
-const numBlobsInput   = document.getElementById("num-blobs");
-const minSizeInput    = document.getElementById("min-size");
-const maxSizeInput    = document.getElementById("max-size");
-const speedInput      = document.getElementById("blob-speed");
-const stickinessInput = document.getElementById("blob-stickiness");
-const color1Input     = document.getElementById("color1");
-const color2Input     = document.getElementById("color2");
-const bgColorInput    = document.getElementById("bg-color");
 
-let blobCount      = Number(numBlobsInput.value);
-let minBlobSize    = Number(minSizeInput.value);
-let maxBlobSize    = Number(maxSizeInput.value);
-let blobSpeed      = Number(speedInput.value);
-let blobStickiness = Number(stickinessInput.value);
+// Safely get elements, return `null` if missing
+const getById = (id) => document.getElementById(id);
+
+const numBlobsInput   = getById("num-blobs");
+const minSizeInput    = getById("min-size");
+const maxSizeInput    = getById("max-size");
+const speedInput      = getById("blob-speed");
+const stickinessInput = getById("blob-stickiness");
+const color1Input     = getById("color1");
+const color2Input     = getById("color2");
+const bgColorInput    = getById("bg-color");
+
+// Only run if the required elements exist
+if (numBlobsInput && minSizeInput && maxSizeInput && speedInput && stickinessInput) {
+  let blobCount      = numBlobsInput ? Number(numBlobsInput.value) : 75;
+  let minBlobSize    = minSizeInput ? Number(minSizeInput.value) : 14;
+  let maxBlobSize    = maxSizeInput ? Number(maxSizeInput.value) : 20;
+  let blobSpeed      = speedInput ? Number(speedInput.value) : 3.5;
+  let blobStickiness = stickinessInput ? Number(stickinessInput.value) : 0.9;
+  
 
 /************************************************
  * 2) Utility: Convert Hex to Normalized RGB Array
@@ -48,15 +53,21 @@ if (!gl) {
 }
 
 function resizeCanvas() {
+  const canvas = document.getElementById("lava-canvas");
+  if (!canvas) return;
+
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight;
-  gl.viewport(0, 0, canvas.width, canvas.height);
+
+  const gl = canvas.getContext("webgl");
+  if (gl) {
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      rebuildProgram(); // Forces WebGL to rebuild shaders
+  } else {
+      console.error("❌ WebGL not supported on this browser.");
+  }
 }
-resizeCanvas();
-window.addEventListener("resize", () => {
-  resizeCanvas();
-  rebuildProgram();
-});
+
 
 /************************************************
  * 4) Blob Class and Generation
@@ -248,3 +259,15 @@ function animate() {
   requestAnimationFrame(animate);
 }
 animate();
+
+document.addEventListener("DOMContentLoaded", function () {
+  const canvas = document.getElementById("lava-canvas");
+
+  if (canvas) {
+      console.log("✅ Lava Lamp Canvas found - Running animation...");
+      resizeCanvas(); // Force resize
+      animate(); // Start animation
+  } else {
+      console.error("❌ Lava Lamp Canvas NOT found!");
+  }
+});

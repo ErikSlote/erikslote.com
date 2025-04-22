@@ -1,0 +1,134 @@
+/* General Styling */
+body {
+    background: black;
+    color: white;
+    font-family: "Cormorant Garamond", serif;
+    text-align: center;
+  }
+  
+  /* Lava Lamp Background */
+  #lava-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+  
+  /* Name Styling (Only on Home Page) */
+  .name {
+    font-size: 4rem;
+    font-family: 'Great Vibes', cursive;
+    margin-bottom: 20px;
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100;
+  }
+  
+  /* Social Icons (Only on Home Page) */
+  .social-icons {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    gap: 15px;
+    z-index: 100;
+  }
+  
+  .icon-wrap img {
+    width: 30px;
+    transition: transform 0.3s ease;
+  }
+  
+  .icon-wrap:hover img {
+    transform: translateY(-3px);
+  }
+  
+  .nav-directory {
+    z-index: 10;  /* Ensure it's on top */
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+}
+
+.nav-item {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 18px;
+    color: #ffffff;
+    text-decoration: none;
+    text-transform: lowercase;
+    transition: color 0.3s ease, transform 0.3s ease;
+    cursor: pointer; /* Ensures pointer on hover */
+    z-index: 10; /* Puts it above other elements */
+}
+
+/* Hover Effect */
+.nav-item:hover {
+    color: #ffffff; /* Color on hover */
+    transform: translateY(-2px);
+    
+}
+
+
+  /* About Me & Insights Pages */
+  .about-content, .insights-content {
+    margin-top: 100px;
+    text-align: center;
+  }
+  
+  .blog-list {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .blog-item {
+    font-size: 1.5rem;
+    text-decoration: none;
+    color: white;
+    transition: opacity 0.3s ease, transform 0.2s ease;
+  }
+  
+  .blog-item:hover {
+    opacity: 0.7;
+    transform: translateY(-3px);
+  }
+  
+  /* Navigation Link Styling */
+.nav-item {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight:300;
+    font-size: 18px;
+    color: white;
+    text-decoration: none; /* Remove underline */
+    text-transform: lowercase;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+/* Hover Effect */
+.nav-item {
+ pointer-events: auto !important; /* Forces it to be clickable */
+ }
+ 
+ /************************************************
+     * 5) Lava Lamp Config (No On-Page Control Panel)
+     ************************************************/
+     #lava-canvas {
+        position: fixed; /* Ensures it stays on the page */
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1; /* Keep it behind content */
+        pointer-events: none; /* Prevents it from blocking interactions */
+        display: block; /* Ensures it's visible */
+        background: transparent; /* Ensures no background blocks it */
+    }
+    

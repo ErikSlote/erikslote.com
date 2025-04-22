@@ -1,0 +1,7 @@
+/erikslote.com
+│── index.html       (Home Page)
+│── about.html       (About Me Page)
+│── insights.html    (Insights Page)
+│── styles.css       (Styles for all pages)
+│── script.js        (Optional JS for animations/effects)
+│── images/          (Folder for icons, images)

@@ -1,15 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300&family=Playfair+Display:wght@300&display=swap" rel="stylesheet">
   <meta charset="UTF-8" />
   <title>Erik Slote</title>
   <!-- Google Font for Name -->
   <link rel="preconnect" href="https://fonts.gstatic.com" />
+  <link rel="stylesheet" href="styles.css">
+</head>
   <link 
     href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" 
     rel="stylesheet"
-    
-  />
+    />
   <style>
     /************************************************
      * 1) Global Reset & Layout
@@ -24,7 +26,7 @@
       height: 100%;
       background: #000;  /* Black background */
       color: #ffffff;       /* White text */
-      font-family: Arial, sans-serif;
+      font-family: 'Cormorant Garamond', serif;  /* Or Playfair Display */
       overflow: hidden;  /* Hide scrollbars */
     }
 
@@ -60,40 +62,68 @@
     .blog-content {
       width: 60%;
       max-width: 800px;
-      background: rgba(255, 255, 255, 0.1);
+      background: rgb(255, 255, 255);
       padding: 20px;
       border-radius: 8px;
       margin-bottom: 20px;
     }
 
     /************************************************
-     * 4) Social Icons at Bottom Center
+     * 4) Social Icons at Center
      ************************************************/
-    .social-icons {
-      position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 15px;
-      z-index: 2; /* Added z-index so they appear above other elements */;
+     .social-icons {
+    position: absolute;
+    bottom: 315px; /* Adjust as needed */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 0px; /* Small gap for tighter spacing */
+    align-items: center;
+    justify-content: center; /* Ensures even spacing */
+    z-index: 2; /* Added z-index so they appear above other elements */;
     }
     .icon-wrap {
       display: inline-block;
-      border: 2px solid #00000000; /* White outline */
-      border-radius: 50%;
-      padding: 8px;
+      border: 0px solid #00000000; /* White outline */
+      border-radius: 25%;
+      padding: 10px;
       transition: transform 0.3s ease;
       z-index: 2; /* Ensures each icon is on top of the background */
     }
     .icon-wrap:hover {
-      transform: translateY(-5px) scale(1.1); /* “Pop up” on hover */
+      transform: translateY(-3px) scale(1.1); /* “Pop up” on hover */
     }
     .icon-wrap img {
-      width: 35px;  /* Adjust icon size */
-      height: 35px;
+      width: 25px;  /* Adjust icon size */
+      height: 25px;
       display: block;
     }
+
+    /************************************************
+     * 4) Directory 
+     ************************************************/
+    .nav-directory {
+    position: absolute;
+    bottom: 20px; /* Same position where icons used to be */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 25px; /* Space between links */
+    z-index: 2;
+}
+.nav-item {
+    font-family: 'Cormorant Garamond', serif;  /* Or Playfair Display */
+    font-weight: 300;
+    color: white;
+    text-transform:none;
+    text-decoration:none;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.nav-item:hover {
+    opacity: 0.7;
+    transform: translateY(-2px); /* Subtle pop-up effect */
+}
   </style>
 </head>
 <body>
@@ -101,23 +131,30 @@
   <!-- Canvas for the Lava Lamp Background -->
   <canvas id="lava-canvas"></canvas>
 
-  <!-- Main Content Overlay -->
-  <div class="container">
-    <div class="name">Erik Slote</div>
-    
-    <!-- Bottom-Centered Social Icons -->
-    <div class="social-icons">
-        <a href="https://x.com/yourhandle" target="_blank" class="icon-wrap">
-        <img src="https://erikslote.github.io/erikslote.com/images/twitter-icon.png" alt="Twitter"/>
-        </a>
-        <a href="https://www.instagram.com/erikslote/" target="_blank" class="icon-wrap">
+ <!-- Main Content Overlay -->
+<div class="container">
+  <div class="name">Erik Slote</div>
+
+  <!-- Navigation Directory -->
+<div class="nav-directory">
+  <a href="index.html" class="nav-item">home</a>
+  <a href="about.html" class="nav-item">about me</a>
+  <a href="insights.html" class="nav-item">insights</a>
+</div>
+
+  <!-- Social Icons (Now Directly Below Name) -->
+  <div class="social-icons">
+      <a href="https://x.com/erik_slote" target="_blank" class="icon-wrap">
+          <img src="https://erikslote.github.io/erikslote.com/images/twitter-icon.png" alt="Twitter"/>
+      </a>
+      <a href="https://www.instagram.com/erikslote/" target="_blank" class="icon-wrap">
           <img src="https://erikslote.github.io/erikslote.com/images/instagram-icon.png" alt="Instagram"/>
-        </a>
-        <a href="https://www.linkedin.com/in/erikslote/" target="_blank" class="icon-wrap">
-          <img src="https://erikslote.github.io/erikslote.com/images/linkedin-icon.png" alt="Linkedin"/>
-        </a>
-      </div>
+      </a>
+      <a href="https://www.linkedin.com/in/erikslote/" target="_blank" class="icon-wrap">
+          <img src="https://erikslote.github.io/erikslote.com/images/linkedin-icon.png" alt="LinkedIn"/>
+      </a>
   </div>
+</div>
 
   <script>
     /************************************************
@@ -128,7 +165,7 @@
       minBlobSize: 14,       // Minimum blob radius
       maxBlobSize: 20,       // Maximum blob radius
       blobSpeed: 3.5,        // Movement speed
-      blobStickiness: 0.6,   // Bounce damping (0 < val <= 1 => bouncier)
+      blobStickiness: 0.9,   // Bounce damping (0 < val <= 1 => bouncier)
       color1: '#1B02A3',     // First color (B)
       color2: '#8A00C4',     // Second color (P)
       backgroundColor: '#000000', // Clear color (black)
@@ -206,26 +243,28 @@
     /************************************************
      * 8) Movement & Bouncing
      ************************************************/
-    function updateBlob(b) {
-      b.x += b.vx;
-      b.y += b.vy;
-      // Bounce horizontally
-      if (b.x < b.r) {
-        b.x = b.r;
+     function updateBlob(b) {
+    b.x += b.vx;
+    b.y += b.vy;
+
+    // Bounce horizontally
+    if (b.x < b.r || b.x > canvas.width - b.r) {
         b.vx = -b.vx * config.blobStickiness;
-      } else if (b.x > canvas.width - b.r) {
-        b.x = canvas.width - b.r;
-        b.vx = -b.vx * config.blobStickiness;
-      }
-      // Bounce vertically
-      if (b.y < b.r) {
-        b.y = b.r;
-        b.vy = -b.vy * config.blobStickiness;
-      } else if (b.y > canvas.height - b.r) {
-        b.y = canvas.height - b.r;
-        b.vy = -b.vy * config.blobStickiness;
-      }
+
+        // Ensure velocity remains within a reasonable range
+        b.vx = Math.sign(b.vx) * Math.max(Math.abs(b.vx), 0.5);
+        b.vx = Math.sign(b.vx) * Math.min(Math.abs(b.vx), config.blobSpeed);
     }
+
+    // Bounce vertically
+    if (b.y < b.r || b.y > canvas.height - b.r) {
+        b.vy = -b.vy * config.blobStickiness;
+
+        // Ensure velocity remains within a reasonable range
+        b.vy = Math.sign(b.vy) * Math.max(Math.abs(b.vy), 0.7);
+        b.vy = Math.sign(b.vy) * Math.min(Math.abs(b.vy), config.blobSpeed);
+    }
+}
 
     /************************************************
      * 9) Shader Program
